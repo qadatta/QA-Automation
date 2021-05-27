@@ -1,0 +1,585 @@
+{
+	"info": {
+		"_postman_id": "49e46b2e-f848-4a57-aed4-87a9b3d59de6",
+		"name": "Github_assignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create git repository",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function getRepositoryRandomName(){",
+							"    return  \"postman_repo_\"+  parseInt(Math.random()*100);",
+							"}",
+							"",
+							"pm.environment.set(\"repositoryName\", getRepositoryRandomName());",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test 1: Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"    var jsonData = pm.response.json();",
+							"",
+							"",
+							"pm.test(\"Test 2: Verify created repositry name\", function () {",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"repositoryName\"));",
+							"    pm.expect(jsonData.description).to.eql(\"This is a test repository created by Postman\");",
+							"    ",
+							"});",
+							"",
+							"pm.environment.set(\"repositoryName\", jsonData.name);",
+							"pm.environment.set(\"repository_owner_name\", jsonData.owner.login);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"warning": "Value contains invalid newline characters.",
+						"key": "Accept",
+						"value": "application/vnd.github.nebula-preview+json\n",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-GitHub-OTP",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{repositoryName}}\",\r\n  \"description\": \"This is a test repository created by Postman\"\r\n}"
+				},
+				"url": {
+					"raw": "https://api.github.com/user/repos",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"user",
+						"repos"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Test repository",
+							"disabled": true
+						},
+						{
+							"key": "description",
+							"value": "This is a test repository created by Postman",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get git repository",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test 1: Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var repositories = pm.response.json();",
+							"",
+							"pm.test(\"Test 2: Repositry should be created\", function() {",
+							"    var repositryCreated = false;",
+							"",
+							"    for (var i = 0; i < repositories.length; i++) {",
+							"        console.log(\"repository\" + repositories[i].name);",
+							"        if (repositories[i].name === pm.environment.get(\"repositoryName\")) {",
+							"            repositryCreated = true;",
+							"            break;",
+							"        }",
+							"    }",
+							"",
+							"    if (false === repositryCreated) {",
+							"        pm.expect.fail('This failed because repositry [' + pm.environment.get(\"repositoryName\") + '] is not created');",
+							"    }",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"warning": "Value contains invalid newline characters.",
+						"key": "Accept",
+						"value": "application/vnd.github.nebula-preview+json\n",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{repositoryName}}\",\r\n  \"description\": \"This is a test repository created by Postman\"\r\n}"
+				},
+				"url": {
+					"raw": "https://api.github.com/user/repos",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"user",
+						"repos"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Test repository",
+							"disabled": true
+						},
+						{
+							"key": "description",
+							"value": "This is a test repository created by Postman",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create issue in github repositry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"    var jsonData = pm.response.json();",
+							"",
+							"",
+							"",
+							"pm.environment.set(\"issue_number\",jsonData.number );"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Found a bug\",\r\n  \"body\": \"This issue has been automatically created by Postman.\",\r\n  \"labels\": [\r\n    \"bug\"\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo/issues",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo",
+						"issues"
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{repository_owner_name}}",
+							"type": "string"
+						},
+						{
+							"key": "repo",
+							"value": "{{repositoryName}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get  issue in github repositry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.title).to.eql(\"Found a bug\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Found a bug\",\r\n  \"body\": \"This issue has been automatically created by Postman.\",\r\n  \"labels\": [\r\n    \"bug\"\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo/issues/:issue_number",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo",
+						"issues",
+						":issue_number"
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{repository_owner_name}}",
+							"type": "string"
+						},
+						{
+							"key": "repo",
+							"value": "{{repositoryName}}",
+							"type": "string"
+						},
+						{
+							"key": "issue_number",
+							"value": "{{issue_number}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete github repositry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Found a bug\",\r\n  \"body\": \"This issue has been automatically created by Postman.\",\r\n  \"labels\": [\r\n    \"bug\"\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo"
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{repository_owner_name}}",
+							"type": "string"
+						},
+						{
+							"key": "repo",
+							"value": "{{repositoryName}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verifyDeletedRepo",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test 1: Status code is 404\", function() {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"",
+							"pm.environment.unset(\"issue_number\" );",
+							"pm.environment.unset(\"repositoryName\" );",
+							"pm.environment.unset(\"repository_owner_name\" );",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"warning": "Value contains invalid newline characters.",
+						"key": "Accept",
+						"value": "application/vnd.github.nebula-preview+json\n",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{repositoryName}}\",\r\n  \"description\": \"This is a test repository created by Postman\"\r\n}"
+				},
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Test repository",
+							"disabled": true
+						},
+						{
+							"key": "description",
+							"value": "This is a test repository created by Postman",
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{repository_owner_name}}",
+							"type": "string"
+						},
+						{
+							"key": "repo",
+							"value": "{{repositoryName}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
