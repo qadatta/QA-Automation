@@ -13,16 +13,8 @@ public void setHorizpntalSliderTestForRangeValue4(){
 
     slider.clickRightArrowOnSlider();
 
-    double rangeValue = slider.getSliderSelectedRange();
+    slider.setHorizontalSliderRange(4);
 
-    do {
-        if(rangeValue<4)
-            slider.clickRightArrowOnSlider();
-        else
-            slider.clickLeftArrowOnSlider();
-        rangeValue = slider.getSliderSelectedRange();
-        System.out.println(rangeValue);
-    }while(rangeValue !=4);
     double sliderSelectedRange = slider.getSliderSelectedRange();
     Assert.assertTrue(4 == sliderSelectedRange ,"Slider selected range is not 4, it is " + sliderSelectedRange);
 

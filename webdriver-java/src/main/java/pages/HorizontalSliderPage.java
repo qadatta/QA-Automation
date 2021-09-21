@@ -27,16 +27,7 @@ public class HorizontalSliderPage {
     }
 
     public void clickRightArrowOnSlider(){
-        System.out.println("Right arrow click");
 
-        try {
-            Thread.sleep(5000);
-            WebElement rangeinput = driver.findElement( RelativeLocator.with(By.tagName("input")).toLeftOf(By.cssSelector("span#range")));
-            System.out.println("a tag >>>>>> "+rangeinput.getText());
-
-        }catch (Exception e){
-System.out.println("---------"+e);
-        }
         driver.findElement( RelativeLocator.with(rangeSlider).toLeftOf(rangeValue)).sendKeys(Keys.ARROW_RIGHT);
     }
 
@@ -45,4 +36,15 @@ System.out.println("---------"+e);
     }
 
 
+    public void setHorizontalSliderRange(int value) {
+        double rangeValue = getSliderSelectedRange();
+        do {
+            if(rangeValue<value)
+                clickRightArrowOnSlider();
+            else
+                clickLeftArrowOnSlider();
+            rangeValue = getSliderSelectedRange();
+            System.out.println(rangeValue);
+        }while(rangeValue !=value);
+    }
 }
