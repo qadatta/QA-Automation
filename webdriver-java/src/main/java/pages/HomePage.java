@@ -44,4 +44,23 @@ public class HomePage {
         return new HorizontalSliderPage(driver);
     }
 
+    public JavaScriptAlertsPage clickJavaScriptAlertsLink(){
+        clickOnLink("JavaScript Alerts");
+        return new JavaScriptAlertsPage(driver);
+    }
+
+    public WYSIWYGEditorPage clickWYSIWYGEditorLink(){
+        clickOnLink("WYSIWYG Editor");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new WYSIWYGEditorPage(driver);
+    }
+
+    public NestedFramePage goToNestedFramePage(){
+        driver.findElement(By.linkText("Nested Frames")).click();
+        return new NestedFramePage(driver);
+    }
 }

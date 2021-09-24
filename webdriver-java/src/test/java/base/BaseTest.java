@@ -9,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import pages.HomePage;
 
 import java.util.List;
@@ -31,12 +32,17 @@ public class BaseTest {
 //        driver.manage().window().maximize();
         driver = new FirefoxDriver();
         driver.manage().window().maximize();
-
+    openHomePage();
         ////        driver.manage().window().fullscreen();
 ////driver.manage().window().setSize(new Dimension(320,480));
-        driver.get("https://the-internet.herokuapp.com");
 //        System.out.println(driver.getTitle());
         homePage = new HomePage(driver);
+   }
+
+   @BeforeMethod
+   public void openHomePage(){
+       driver.get("https://the-internet.herokuapp.com");
+
    }
 
 @AfterClass
