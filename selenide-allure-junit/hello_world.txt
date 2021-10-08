@@ -1,0 +1,3 @@
+hello_world.txt test file
+
+//*[@id="res"]/center/text()[2]
