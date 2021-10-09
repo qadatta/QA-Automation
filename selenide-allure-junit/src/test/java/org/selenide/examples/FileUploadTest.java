@@ -28,7 +28,7 @@ public class FileUploadTest {
 
   @Test
   public void uploadFileUsingSelenideTest() {
-	  System.setProperty("selenide.headless","true");
+//	  System.setProperty("selenide.headless","true");
     open("http://demo.guru99.com/test/upload/");
 	  File file = $("#uploadfile_0").uploadFile(new File("hello_world.txt"));
 	  $("#submitbutton").click();
@@ -42,7 +42,7 @@ public class FileUploadTest {
 	 */
 	@Test
   public void uploadFileUsingSelenideTest2() {
-//  	System.setProperty("selenide.headless","true");
+  //	System.setProperty("selenide.headless","false");
 
   	//Set variable using soap service response call
   	testTogetResultFromSoapServiceResponse();
