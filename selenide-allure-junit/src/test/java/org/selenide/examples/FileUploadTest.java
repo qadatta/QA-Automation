@@ -47,7 +47,7 @@ public class FileUploadTest {
     open("http://demo.guru99.com/test/upload/");
 	  File file = $("#uploadfile_0").uploadFile(new File("hello_world.txt"));
 	  $("#submitbutton").click();
-	    $("#res").shouldHave(text("successfully uploaded"));
+	    $("#res").shouldHave(text("successfully uploaded-failing-string"));
 
   }
 
