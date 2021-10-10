@@ -14,7 +14,7 @@
   <version>2.1</version>
   
   <properties>
-    <allure.version>2.13.5</allure.version>
+    <allure.version>2.15.0</allure.version>
     <aspectj.version>1.9.5</aspectj.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <restassured.version>3.3.0</restassured.version>
@@ -91,6 +91,8 @@
         <version>2.22.2</version>
         <configuration>
           <testFailureIgnore>true</testFailureIgnore>
+          <parallel>methods</parallel>
+          <threadCount>2</threadCount>
           <!--suppress UnresolvedMavenProperty -->
           <argLine>
             -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
@@ -109,7 +111,7 @@
             </property>
             <property>
               <name>selenide.headless</name>
-              <value>true</value>
+              <value>false</value>
             </property>
           </systemProperties>
         </configuration>

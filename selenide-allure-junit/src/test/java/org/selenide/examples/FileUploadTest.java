@@ -10,6 +10,7 @@ import io.restassured.http.ContentType;
 import io.restassured.path.xml.XmlPath;
 import io.restassured.response.Response;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.codeborne.selenide.Driver;
@@ -26,15 +27,28 @@ public class FileUploadTest {
 
 	String fileUploadNote = " Test ";
 
+	@BeforeClass
+	public static void setupAllureReports() {
+		SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
+
+		// or for fine-tuning:
+		SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
+				.screenshots(false)
+				.savePageSource(true)
+		);
+	}
+
   @Test
   public void uploadFileUsingSelenideTest() {
-//	  System.setProperty("selenide.headless","true");
+	  sleep(10000);
+
+		//	  System.setProperty("selenide.headless","true");
+	  SelenideLogger.addListener("AllureSelenide", new AllureSelenide().screenshots(true).savePageSource(false));
     open("http://demo.guru99.com/test/upload/");
 	  File file = $("#uploadfile_0").uploadFile(new File("hello_world.txt"));
 	  $("#submitbutton").click();
-	    $("#res").shouldHave(text("successfully uploaded1"));
+	    $("#res").shouldHave(text("successfully uploaded"));
 
-   
   }
 
 	/**
@@ -43,6 +57,7 @@ public class FileUploadTest {
 	@Test
   public void uploadFileUsingSelenideTest2() {
   //	System.setProperty("selenide.headless","false");
+		sleep(10000);
 
   	//Set variable using soap service response call
   	testTogetResultFromSoapServiceResponse();
