@@ -21,7 +21,7 @@ Feature: Login Functionality
 @googleSearch
 Scenario: Google search using api response
 
-When User details api executed
+When User details api executed - new
 Given I am on google home page
 When google search using api response value
 Then verify api response in result page

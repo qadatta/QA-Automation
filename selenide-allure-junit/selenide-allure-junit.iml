@@ -9,13 +9,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: io.qameta.allure:allure-junit4:2.13.5" level="project" />
-    <orderEntry type="library" name="Maven: io.qameta.allure:allure-java-commons:2.13.5" level="project" />
-    <orderEntry type="library" name="Maven: io.qameta.allure:allure-model:2.13.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.tika:tika-core:1.20" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jooq:joor-java-8:0.9.10" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: junit:junit:4.12" level="project" />
-    <orderEntry type="library" name="Maven: io.qameta.allure:allure-selenide:2.13.5" level="project" />
+    <orderEntry type="library" name="Maven: io.qameta.allure:allure-junit4:2.15.0" level="project" />
+    <orderEntry type="library" name="Maven: io.qameta.allure:allure-java-commons:2.15.0" level="project" />
+    <orderEntry type="library" name="Maven: io.qameta.allure:allure-model:2.15.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: junit:junit:4.13.2" level="project" />
+    <orderEntry type="library" name="Maven: io.qameta.allure:allure-selenide:2.15.0" level="project" />
     <orderEntry type="library" name="Maven: com.codeborne:selenide:5.13.0" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-java:3.141.59" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-api:3.141.59" level="project" />

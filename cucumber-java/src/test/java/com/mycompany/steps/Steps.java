@@ -40,7 +40,8 @@ public class Steps extends BaseUtil {
 		//System.setProperty("webdriver.chrome.driver", "C:\\Drivers\\chromedriver.exe");
 		System.setProperty("webdriver.chrome.driver","resources/chromedriver.exe");
 //		System.setProperty("webdriver.gecko.driver","resources/geckodriver");
-		driver = new ChromeDriver();
+			driver = new ChromeDriver();
+//		driver = new HtmlUnitDriv();
 	}
 	
 	
@@ -128,7 +129,7 @@ public class Steps extends BaseUtil {
 		WebDriverWait wait = new WebDriverWait(driver, 30);
 		wait.until(ExpectedConditions.elementToBeClickable(By.className("smallText")));
 		
-		String actualuserFullName = driver.findElement(By.className("smallText")).getText().toString();
+		String actualuserFullName = driver.findElement(By.className("smallText")).getText();
 
 		System.out.println(baseUtil.getUserFullName());
 
@@ -194,6 +195,40 @@ public class Steps extends BaseUtil {
 		List<String> sName = new XmlPath(response.asString()).getList("Envelope.Body.ListOfContinentsByNameResponse.ListOfContinentsByNameResult.tContinent.sName");
 		System.out.println(sName);
 		baseUtil.setUserFullName(userFullName = sName.get(2));
+	}
+
+	@When("User details api executed - new")
+	public void userDetailsApiExecutedNew() {
+		String reuestPayload = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+				"<soap12:Envelope xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">\n" +
+				"  <soap12:Body>\n" +
+				"    <Add xmlns=\"http://tempuri.org/\">\n" +
+				"      <intA>100</intA>\n" +
+				"      <intB>200</intB>\n" +
+				"    </Add>\n" +
+				"  </soap12:Body>\n" +
+				"</soap12:Envelope>\n";
+		RequestSpecification xmlReqSpecBuilder= new RequestSpecBuilder()
+				.setBaseUri("http://www.dneonline.com/calculator.asmx")
+				//.setContentType(ContentType.XML)
+				.addHeader("SOAPAction","http://tempuri.org/Add")
+				. addHeader("Content-Type","text/xml; charset=utf-8")
+
+				.build();
+		;
+
+
+		Response response=   RestAssured.given()
+				.spec(xmlReqSpecBuilder).log().body()
+				.body(reuestPayload).log().body()
+				.when().post()
+				.then().log().body()
+				.assertThat().statusCode(200)
+				.contentType(ContentType.XML).extract().response();
+
+		String result = new XmlPath(response.asString()).get("Envelope.Body.AddResponse.AddResult");
+		System.out.println(result);
+		baseUtil.setUserFullName(userFullName = result);
 	}
 
 	@Given("I am on google home page")
