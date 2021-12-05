@@ -11,13 +11,20 @@ import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import io.restassured.path.xml.XmlPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
+import org.skyscreamer.jsonassert.Customization;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.comparator.CustomComparator;
+import org.skyscreamer.jsonassert.comparator.JSONComparator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +32,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
@@ -63,7 +72,7 @@ public class FileDownloadStepDefinitions {
       System.out.println("Following is downloaded files...");
       while(scan.hasNextLine()){
         String line = scan.nextLine();
-        System.out.println(line);
+   //     System.out.println(line);
       }
       scan.close();
     } catch (FileNotFoundException e) {
@@ -89,6 +98,44 @@ public class FileDownloadStepDefinitions {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+  }
+
+
+  @And("file matches with expected file {string} skip below fields")
+  public void fileMatchesWithExpectedFileSkipBelowFields(String fileName,List<String> jsonPaths) {
+
+    File expectedFile = new File(fileName);
+    List<Customization> customizations = new ArrayList<>();
+
+    for (String s: jsonPaths) {
+      customizations.add(new Customization(s,(o1,o2)-> true));
+    }
+
+    try {
+      String expectedJosn = FileUtils.readFileToString(expectedFile, "UTF-8");
+      String actualJsonFile = FileUtils.readFileToString(jsonFile, "UTF-8");
+
+      JSONComparator com = new CustomComparator(JSONCompareMode.STRICT, customizations.toArray(new Customization[0]));
+
+//      com = new CustomComparator(JSONCompareMode.STRICT,
+//                new Customization("*.updatedAt", (o1, o2) -> true));
+
+
+      for (String s:jsonPaths) {
+
+        System.out.println(s);
+      }
+
+
+      JSONAssert.assertEquals(actualJsonFile, expectedJosn, com);
+
+
+
+    } catch (IOException | JSONException e) {
+      e.printStackTrace();
+    }
+
 
   }
 }

@@ -22,7 +22,6 @@ import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.builder.RequestSpecBuilder;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 
 public class FileUploadStepDefinitions {
   private String keyword;
@@ -84,6 +83,35 @@ public class FileUploadStepDefinitions {
     fileUploadNote += result;
   }
 
+
+  @Given("user executed soap service request payload using file and set required variable for scenario")
+  public void userExecutedSoapServiceRequestPayloadUsingFileAndSetRequiredVariableForScenario() {
+
+    File xmlFile = new File("requests-payloads/add-request-payload.xml");
+    RequestSpecification xmlReqSpecBuilder= new RequestSpecBuilder()
+            .setBaseUri("http://www.dneonline.com/calculator.asmx")
+            .setContentType(ContentType.XML)
+            .addHeader("SOAPAction","http://tempuri.org/Add")
+            . addHeader("Content-Type","text/xml; charset=utf-8")
+
+            .build();
+    ;
+
+
+    Response response=   RestAssured.given()
+            .spec(xmlReqSpecBuilder).log().body()
+            .body(xmlFile).log().body()
+            .when().post()
+            .then().log().body()
+            .assertThat().statusCode(200)
+            .contentType(ContentType.XML).extract().response();
+
+    String result = new XmlPath(response.asString()).get("Envelope.Body.AddResponse.AddResult");
+    System.out.println(result);
+    fileUploadNote += result;
+
+  }
+
   @Given("user is on file upload page")
   public void user_is_on_file_upload_page() {
     Configuration.reportsFolder = "target/surefire-reports";
@@ -130,6 +158,7 @@ public class FileUploadStepDefinitions {
     System.out.println("fileUploadNote>>"+fileUploadNote);
 
   }
+
 //
 //  @When("click \"Images\" link")
 //  public void chooseImagesAsSearchTarget() {
