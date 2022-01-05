@@ -29,3 +29,13 @@ Then note from soap service response is visible on file upload result
     Then note from soap service response is visible on file upload result
 
 
+
+Scenario: Execute soap service by preparing request payload from file template with dynamic values
+
+    Given user has soap service request for file upload
+    When user prepare request by updating following values in template
+      | xmlpath													 																				| 		nodeValue							|
+      | catalog/book[@id='bk102']/price 																				| 		8.99							|
+      | catalog/book[@id='bk111']/price 																				| 		99.99							|
+    And submitted request with updated payload 
+    Then response has updated values 

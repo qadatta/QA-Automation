@@ -81,7 +81,7 @@ public class SoapServiceDemoExamples {
                 "</soap12:Envelope>\n";
 
 
-        requestSpecification.baseUri("")
+        requestSpecification.baseUri("");
         given().
                 spec(requestSpecification)
                 .body(input)
