@@ -57,7 +57,7 @@
               <inputDirectory>${project.build.directory}</inputDirectory>
               <jsonFiles>
                 <!-- supports wildcard or name pattern -->
-                <param>**/*.json</param>
+                <param>**/cucumber.json</param>
               </jsonFiles>
               <!-- optional, defaults to outputDirectory if not specified -->
               <classificationDirectory>${project.build.directory}</classificationDirectory>

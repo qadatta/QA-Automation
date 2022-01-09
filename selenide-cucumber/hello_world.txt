@@ -1,2 +1,0 @@
-This test file to test file upload
-feature using selenium/selenide automation framework

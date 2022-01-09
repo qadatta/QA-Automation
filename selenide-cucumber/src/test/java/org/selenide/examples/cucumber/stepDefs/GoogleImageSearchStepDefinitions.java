@@ -1,4 +1,4 @@
-package org.selenide.examples.cucumber;
+package org.selenide.examples.cucumber.stepDefs;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

@@ -1,4 +1,4 @@
-package org.selenide.examples.cucumber;
+package org.selenide.examples.cucumber.stepDefs;
 
 import com.codeborne.selenide.AssertionMode;
 import com.codeborne.selenide.Condition;

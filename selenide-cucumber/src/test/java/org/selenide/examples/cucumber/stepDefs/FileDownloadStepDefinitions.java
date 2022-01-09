@@ -1,8 +1,10 @@
-package org.selenide.examples.cucumber;
+package org.selenide.examples.cucumber.stepDefs;
 
+import com.codeborne.selenide.AssertionMode;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -46,6 +48,7 @@ public class FileDownloadStepDefinitions {
 
   File jsonFile ;
 
+  
   @Given("user is on json file download page")
   public void user_is_on_json_file_download_page() {
     open("https://www.appsloveworld.com/download-sample-json-file-with-multiple-records/");
@@ -88,7 +91,9 @@ public class FileDownloadStepDefinitions {
 
   @And("file matches with expected file {string}")
   public void fileMatchesWithExpectedFile(String fileName) {
-    File expectedFile = new File(fileName);
+	    File resourcesDirectory = new File("src/test/resources");
+
+    File expectedFile = new File(resourcesDirectory.getAbsolutePath()+"/upload_files/"+fileName);
     try {
       boolean fileContentMatch = FileUtils.contentEquals(jsonFile, expectedFile);
 
@@ -105,7 +110,9 @@ public class FileDownloadStepDefinitions {
   @And("file matches with expected file {string} skip below fields")
   public void fileMatchesWithExpectedFileSkipBelowFields(String fileName,List<String> jsonPaths) {
 
-    File expectedFile = new File(fileName);
+	    File resourcesDirectory = new File("src/test/resources");
+
+    File expectedFile = new File(resourcesDirectory.getAbsolutePath()+"/upload_files/"+ fileName);
     List<Customization> customizations = new ArrayList<>();
 
     for (String s: jsonPaths) {

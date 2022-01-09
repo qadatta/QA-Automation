@@ -1,4 +1,4 @@
-package org.selenide.examples.cucumber;
+package org.selenide.examples.cucumber.stepDefs;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
@@ -24,6 +24,7 @@ import org.openqa.selenium.OutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.codeborne.selenide.AssertionMode;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 
@@ -93,13 +94,14 @@ public class FileUploadStepDefinitions {
 	@Given("user executed soap service request payload using file and set required variable for scenario")
 	public void userExecutedSoapServiceRequestPayloadUsingFileAndSetRequiredVariableForScenario() {
 
-		File xmlFile = new File("requests-payloads/add-request-payload.xml");
+	    File resourcesDirectory = new File("src/test/resources");
+
+		File xmlFile = new File(resourcesDirectory.getAbsolutePath()+ "/payload_templates/add-request-payload.xml");
 		RequestSpecification xmlReqSpecBuilder = new RequestSpecBuilder()
 				.setBaseUri("http://www.dneonline.com/calculator.asmx").setContentType(ContentType.XML)
 				.addHeader("SOAPAction", "http://tempuri.org/Add").addHeader("Content-Type", "text/xml; charset=utf-8")
-
 				.build();
-		;
+		
 
 		Response response = RestAssured.given().spec(xmlReqSpecBuilder).log().body().body(xmlFile).log().body().when()
 				.post().then().log().body().assertThat().statusCode(200).contentType(ContentType.XML).extract()
@@ -114,12 +116,15 @@ public class FileUploadStepDefinitions {
 	@Given("user is on file upload page")
 	public void user_is_on_file_upload_page() {
 		Configuration.reportsFolder = "target/surefire-reports";
+		Configuration.assertionMode = AssertionMode.SOFT;
 		open("https://cgi-lib.berkeley.edu/ex/fup.html");
 	}
 
 	@When("user select file {string} to upload")
 	public void user_select_file_hello_world_txt_to_upload(String fileName) {
-		File file = $("input[name='upfile']").uploadFile(new File(fileName));
+		
+	    File resourcesDirectory = new File("src/test/resources");
+		File file = $("input[name='upfile']").uploadFile(new File(resourcesDirectory.getAbsolutePath()+"/upload_files/"+ fileName));
 
 	}
 
@@ -196,23 +201,29 @@ public class FileUploadStepDefinitions {
 
 		try {
 			b = f.newDocumentBuilder();
-			Document doc = b.parse(new File("request_payload.xml"));
+		    File resourcesDirectory = new File("src/test/resources");
+
+			Document doc = b.parse(new File(resourcesDirectory.getAbsolutePath()+"/payload_templates/request_payload.xml"));
+			
+			
 			XPath xPath = XPathFactory.newInstance().newXPath();
 			
 			for (Map<String, String> columns : rows) {
 				// store.addBook(new Book(columns.get("title"), columns.get("author")));
 				System.out.println("xmlpath: " + columns.get("xmlpath") + " nodeValue: " + columns.get("nodeValue"));
+				
 				Node node = (Node) xPath.compile(columns.get("xmlpath")).evaluate(doc, XPathConstants.NODE);
 				node.setTextContent(columns.get("nodeValue"));
 			}
 
+			
 			Transformer tf = TransformerFactory.newInstance().newTransformer();
 			tf.setOutputProperty(OutputKeys.INDENT, "yes");
 			tf.setOutputProperty(OutputKeys.METHOD, "xml");
 			tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
 			DOMSource domSource = new DOMSource(doc);
-			StreamResult sr = new StreamResult(new File("request_payload.xml"));
+			StreamResult sr = new StreamResult(new File(resourcesDirectory.getAbsolutePath()+"/payload_templates/request_payload.xml"));
 			tf.transform(domSource, sr);
 
 		} catch (Exception e) {
@@ -229,9 +240,8 @@ public class FileUploadStepDefinitions {
 
 	@Then("response has updated values")
 	public void response_has_updated_values() {
-		// Write code here that turns the phrase above into concrete actions
-		System.out.println("Validation on api response...");
-		throw new io.cucumber.java.PendingException();
+
+		System.out.println("Verification will be added here...");
 	}
 
 }
