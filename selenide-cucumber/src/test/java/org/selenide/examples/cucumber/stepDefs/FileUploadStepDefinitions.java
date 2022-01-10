@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selenide.open;
 
 import java.io.File;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.OutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -27,8 +29,11 @@ import org.w3c.dom.Node;
 import com.codeborne.selenide.AssertionMode;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.testng.annotations.Report;
 
+import io.cucumber.core.logging.Logger;
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -44,7 +49,17 @@ import io.restassured.specification.RequestSpecification;
 public class FileUploadStepDefinitions {
 	private String keyword;
 	private String fileUploadNote = "";
-
+	
+	public static Scenario scenario ;
+	public static SoftAssertions softly ;
+	  
+	@Before
+	public void setUp(Scenario scenario) {
+		this.scenario = scenario;
+		 softly = new SoftAssertions();
+		  
+	}
+	
 	@After()
 	public void quitBrowser(Scenario scenario) {
 
@@ -68,6 +83,8 @@ public class FileUploadStepDefinitions {
 
 	}
 
+	
+	
 	@Given("user executed soap service and set required veriables for scenario")
 	public void user_executed_soap_service_and_set_required_veriables_for_scenario() {
 		String reuestPayload = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -183,6 +200,7 @@ public class FileUploadStepDefinitions {
 	@Given("user has soap service request for file upload")
 	public void user_has_soap_service_request_for_file_upload() {
 		System.out.println("User will prepare soap request here...");
+		scenario.log("SOAP request will be prepared here");
 	}
 
 	@When("user prepare request by updating following values in template")
@@ -198,7 +216,7 @@ public class FileUploadStepDefinitions {
 		DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
 		DocumentBuilder b;
 		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-
+		
 		try {
 			b = f.newDocumentBuilder();
 		    File resourcesDirectory = new File("src/test/resources");
@@ -226,6 +244,7 @@ public class FileUploadStepDefinitions {
 			StreamResult sr = new StreamResult(new File(resourcesDirectory.getAbsolutePath()+"/payload_templates/request_payload.xml"));
 			tf.transform(domSource, sr);
 
+			scenario.log("File need to uplaoded here");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -236,12 +255,43 @@ public class FileUploadStepDefinitions {
 	@When("submitted request with updated payload")
 	public void submitted_request_with_updated_payload() {
 		// Write code here that turns the phrase above into concrete actions
+		   softly.assertThat(42).as("Response to everything").isGreaterThan(100);
+		   
+		System.out.println("Verification will be added here...");
+		scenario.log("1!=0");
+		softly.assertThat("Datta").isEqualTo("More");
+		scenario.log("2!=0");
+		scenario.log("before asserting all sof asseertoins");
+
+		//   softly.assertAll();
+			scenario.log("End of step");
+
 	}
 
 	@Then("response has updated values")
-	public void response_has_updated_values() {
+	public void response_has_updated_values(io.cucumber.datatable.DataTable dataTable) {
 
-		System.out.println("Verification will be added here...");
-	}
+		System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+		scenario.log("############################");
+		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
 
+//		   SoftAssertions softly = new SoftAssertions();
+
+		
+		for (Map<String, String> columns : rows) {
+			String attribute = columns.get("attribute");
+			String attributeValue = columns.get("attributeValue");
+			System.out.println("######################################################################################################################");
+			scenario.log("attribute: " + attribute + " attributeValue: " + attributeValue);
+			System.out.println("attribute: " + attribute + " attributeValue: " + attributeValue);
+			   softly.assertThat(Double.valueOf(attributeValue)).as("Attribute %s : ",attribute).isGreaterThan(100);
+			   softly.assertThat(Double.valueOf(attributeValue)).isGreaterThan(100);
+				
+			}
+		
+			softly.assertAll();
+			scenario.log("Verification hends here");
+			
+		}
+	
 }

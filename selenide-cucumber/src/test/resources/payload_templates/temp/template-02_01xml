@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soap12:Body>
+        <Add xmlns="http://tempuri.org/">
+            <intA>499</intA>
+            <intB>533</intB>
+        </Add>
+    </soap12:Body>
+</soap12:Envelope>
