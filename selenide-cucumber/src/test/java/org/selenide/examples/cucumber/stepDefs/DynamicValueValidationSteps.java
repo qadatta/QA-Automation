@@ -2,7 +2,12 @@ package org.selenide.examples.cucumber.stepDefs;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +36,7 @@ public class DynamicValueValidationSteps {
 
 	public static Scenario scenario;
 	public static SoftAssertions softly ;
-
+	public HashMap<String, String> scenarioValidations = new HashMap<>();
 	@Before
 	public void setUp(Scenario scenario) {
 		this.scenario = scenario;
@@ -70,9 +75,27 @@ public class DynamicValueValidationSteps {
 			
 			for (Map<String, String> columns : rows) {
 				// store.addBook(new Book(columns.get("title"), columns.get("author")));
-				System.out.println("xmlpath: " + columns.get("xmlpath") + " nodeValue: " + columns.get("nodeValue"));
+				String nodeValue = columns.get("nodeValue");
+				if(nodeValue.equalsIgnoreCase("$publish_date$")) {
+					//Dynamically generated date
+					 Date dNow = new Date( );
+				      SimpleDateFormat ft = 
+				      new SimpleDateFormat ("yyyy-MM-dd");
+				      nodeValue = ft.format(dNow);
+				      scenarioValidations.put("publish_date", nodeValue);
+				}
+				else if(nodeValue.equalsIgnoreCase("$SID$")) {
+					//Dynamically generated value 
+					nodeValue = "generated_SID";
+				      scenarioValidations.put("SID", "generated_SID");
+					
+				}else if(nodeValue.equalsIgnoreCase("$Token$")) {
+					//Dynamically generated Token may be result of api response 
+				}
+				
+				System.out.println("xmlpath: " + columns.get("xmlpath") + " nodeValue: " +nodeValue);
 				Node node = (Node) xPath.compile(columns.get("xmlpath")).evaluate(doc, XPathConstants.NODE);
-				node.setTextContent(columns.get("nodeValue"));
+				node.setTextContent(nodeValue);
 			}
 
 			
@@ -109,16 +132,44 @@ public class DynamicValueValidationSteps {
 	public void response_is_updated_with_correct_values(io.cucumber.datatable.DataTable dataTable) {
 		
 		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-			
+		
+		Formatter fmt = new Formatter();  
+		scenario.log(fmt.format("%30s %50s %50s %10s\n", "Attribute", "Actual", "Expected","Status").toString());
+		fmt.close();
+		int i=0;
 		for(Map<String,String> row:rows) {
+			fmt = new Formatter();  
+//			scenario.log(rowFmt .format("%30s %50s %50s %10s\n", "Attribute", "Actual", "Expected","Status").toString());
+
 			String attribute = row.get("Attribute");
 			String attributeValue = row.get("AttributeValue");
+			System.out.println(">>>>>>> "+ ++i);
 			
-			
-			scenario.log("------> Actual value of" + attribute +" (read from web page) and expected is "+ attributeValue);
+	//		scenario.log("------> Actual value of" + attribute +" (read from web page) and expected is "+ attributeValue);
 			
 			   softly.assertThat(Double.valueOf(attributeValue)).as("Attribute %s : ",attribute).isGreaterThan(100);
-			
+
+			   System.out.println("softly.wasSuccess()>>>>>>>>>>>>>>>>>>>>> "+softly.wasSuccess());
+			   if(softly.wasSuccess()) {
+					scenario.log(fmt .format("%30s %50s %50s %10s\n", attribute, "Actual from api or UI eleent", attributeValue,"PASS").toString());
+
+			   }else
+			   {
+				   scenario.log(fmt .format("%30s %50s %50s %10s\n", attribute, "Actual from api or UI eleent", attributeValue,"FAIL").toString());
+			   }
+			   	
+		}
+		System.out.println("scenarioValidations>>>>"+scenarioValidations.size());
+		for (Map.Entry<String, String> entry : scenarioValidations.entrySet()) {
+			String attribute = entry.getKey();
+			String Expectedval = entry.getValue();
+			fmt = new Formatter();  
+			// Addd soft assertions for step after reading from UI/parsing API response
+			//if(Actual==expected){
+			//scenario.log("PASS"
+			//else
+			//scenario.log("Fail")
+			scenario.log(fmt .format("%30s %50s %50s %10s\n", attribute, "Actual from api or UI eleent", Expectedval,"PASS/FAIL").toString());
 		}
 		softly.assertAll();
 	}

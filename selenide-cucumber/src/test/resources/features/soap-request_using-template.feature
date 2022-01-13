@@ -1,5 +1,6 @@
 Feature: soap service using template for payloads
  
+@dynamic_api 
 Scenario: Execute soap service by preparing request payload from dynamic file template with dynamic values
 
     Given user with soap service endpoint
@@ -7,6 +8,9 @@ Scenario: Execute soap service by preparing request payload from dynamic file te
       | xmlpath	| 		nodeValue							|
       | catalog/book[@id='bk102']/price 					| 		18.99							|
       | catalog/book[@id='bk111']/price 					| 		299.99							|
+      | catalog/book[@id='bk101']/publish_date	 			| 		$publish_date$					|
+      | catalog/book[@id='bk101']/genre			 			| 		$SID$					|
+      
     And submitted request
     Then response is updated with correct values
         | Attribute											| 		AttributeValue					|
@@ -14,7 +18,7 @@ Scenario: Execute soap service by preparing request payload from dynamic file te
         | price2 											| 		199.99							|
         | price3 											| 		99.99							|
   
-  
+
  Scenario: Execute soap service by preparing request payload from dynamic file template with dynamic values
 
     Given user with soap service endpoint
