@@ -11,13 +11,13 @@
 		<title>XML Developer's Guide</title>
 
 
-		<genre>Computer</genre>
+		<genre>generated_SID</genre>
 
 
 		<price>44.95</price>
 
 
-		<publish_date>generated_SID</publish_date>
+		<publish_date>2022-01-13</publish_date>
 
 
 		<description>An in-depth look at creating applications 
