@@ -1,14 +1,14 @@
 package org.selenide.examples.cucumber.stepDefs;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-import org.openqa.selenium.By;
-
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+
+import org.openqa.selenium.By;
+
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class GoogleImageSearchStepDefinitions {
   private String keyword;

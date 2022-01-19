@@ -1,5 +1,6 @@
 package org.selenide.examples.cucumber.stepDefs;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -7,6 +8,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +18,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.SoftAssertions;
+import org.selenide.examples.cucumber.utils.PropertyFileReader;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -36,7 +41,8 @@ public class CSVFileValidationSteps {
 
 	@Given("user read and print csv file {string}")
 	public void user_read_and_print_csv_file(String fileName) {
-		scenario.log("record validated <span>successfully</span>");
+		scenario.log("record validated successfully <br> line 2 <br> line 3 <br>");
+
 
 		try {
 			File resourcesDirectory = new File("src/test/resources");
@@ -45,8 +51,14 @@ public class CSVFileValidationSteps {
 			Reader reader = Files
 					.newBufferedReader(Paths.get(resourcesDirectory.getAbsolutePath() + "/upload_files/" + fileName));
 
-			Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").parse(reader);  //FOr file with | separator
-//			Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter('|').parse(reader);  //FOr file with | seperator
+			
+			//Find fil csv file delimiter char
+			String dilimiter = getCsvFileDelimiter(usersCSVFile);
+			char delimiterChar = ',';
+			if(dilimiter.equals("|"))
+				delimiterChar ='|';
+			System.out.println("delimiterChar >>>>>>>>>>>>>>>>>"+delimiterChar );
+			Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter(delimiterChar).parse(reader);  
 
 			
 			for (CSVRecord csvRecord : records) {
@@ -102,10 +114,28 @@ public class CSVFileValidationSteps {
 
 		//get resource directory path and create file object of input file
 		File resourcesDirectory = new File("src/test/resources");
-		File usersCSVFile = new File(resourcesDirectory.getAbsolutePath() + "/upload_files/" + fileName);
+		File csvFile = new File(resourcesDirectory.getAbsolutePath() + "/upload_files/" + fileName);
+		
+		//Find fil csv file delimiter char
+		String dilimiter = getCsvFileDelimiter(csvFile);
+		char delimiterChar = ',';
+		if(dilimiter.equals("|"))
+			delimiterChar ='|';
 
 		//Read datatable input from feature file
 		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+		
+		String []tempArray = fileName.split("\\.");
+		System.out.println(tempArray.length);
+		System.out.println(tempArray);
+		
+	    String tempFileName = "template-01-"+ new Date().getTime()+"_"+fileName;
+	    File tempFile = new File(resourcesDirectory.getAbsolutePath()+"/payload_templates/temp/"+ tempArray[0]+ "_" +new Date().getTime() +"."+tempArray[1]);
+	    try {
+			FileUtils.copyFile(csvFile, tempFile);
+		} catch (IOException e1) {
+			System.err.print("Problem in creating temp file for given csv file");
+		}
 		
 		//Iterate datatable for all rows 
 		for (Map<String, String> columns : rows) {
@@ -113,20 +143,69 @@ public class CSVFileValidationSteps {
 			String updateColumnName = columns.get("columnName");
 			String updateColumnValue = columns.get("columnValue");
 			
+			
+		      System.out.println("********** "+updateColumnValue);
+			
+			if(updateColumnValue.contains("financial_period_date")) {
+				PropertyFileReader propertyFileReader = new PropertyFileReader();
+				updateColumnValue =	propertyFileReader.getPropertyValue(new File(resourcesDirectory + "/config.property"), "financial_period_date") ;
+				
+			      System.out.println("****&&&&**** "+updateColumnValue);
+//			      scenarioValidations.put("publish_date", nodeValue);
+			}
+			
 			try {
+				
 				// Call update file method to update record in file
 				//It will delete file and create similar file with updated record
-				updateCsvFile(usersCSVFile, Integer.parseInt(rowNumber), updateColumnName, updateColumnValue);
+				updateCsvFile(tempFile,delimiterChar, Integer.parseInt(rowNumber), updateColumnName, updateColumnValue);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 				
 		}
 		
+		try {
+			scenario.attach(Files.readAllBytes(tempFile.toPath()), "text/plain", "request-body");
+		} catch (IOException e) {
+			scenario.log("Problem in attaching file to step. File: "+tempFile.getPath());
+		}
+
 	}
 
 	
 	
+	  private List<String> delimiterList = new ArrayList<String>(){{
+	        add(",");
+	        add("|");
+
+	    }};
+
+	    private  String determineDelimiter(String text) {
+	        for (String delimiter : delimiterList) {
+	        	System.out.println(text);	
+	        	System.out.println("delimiter ="+delimiter);
+	            if(text.contains(delimiter)) {
+	                return delimiter;
+	            }
+	        }
+	        return "";
+	    }
+	    
+	    private String getCsvFileDelimiter(File csvFile) {
+	    	String line = "";
+	    	  try (BufferedReader br = new BufferedReader(new FileReader(csvFile)))  {
+	              while ((line = br.readLine()) != null) {
+	            	 return  determineDelimiter(line );
+	              }
+	          
+	    }  catch (IOException e) {
+            e.printStackTrace();
+        }
+			return ","; //Default 
+    }
+	    
+
 	/**
 	 * 
 	 * @param f  FIle to update
@@ -135,19 +214,23 @@ public class CSVFileValidationSteps {
 	 * @param columnValue	value which need to be updated for above column for input row number
 	 * @throws Exception
 	 */
-	public void updateCsvFile(File f,int recordNumber, String columnName , String columnValue) throws Exception {
-		CSVParser parser = new CSVParser(new FileReader(f), CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country"));							//for comma seperated file
-//		CSVParser parser = new CSVParser(new FileReader(f), CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter('|'));		//Pipe seperated file
+	public void updateCsvFile(File f,char dilimiter,int recordNumber, String columnName , String columnValue) throws Exception {
+		
+		CSVParser parser = new CSVParser(new FileReader(f), CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter(dilimiter));		
 
 		List<CSVRecord> list = parser.getRecords();
 		String edited = f.getAbsolutePath();
 		f.delete();
 		
-		CSVPrinter printer = new CSVPrinter(new FileWriter(edited),
-				CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter(','));
+	
 		
 //		CSVPrinter printer = new CSVPrinter(new FileWriter(edited),
-//				CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter('|'));
+//				CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter(','));
+	
+		CSVPrinter printer = new CSVPrinter(new FileWriter(edited),
+				CSVFormat.RFC4180.withDelimiter(dilimiter));
+
+		
 		int rowNum = 1;
 		for (CSVRecord record : list) {
 			
@@ -200,8 +283,8 @@ public class CSVFileValidationSteps {
 
 	
 	public void updateCsvFile(File f, String updateValue ,String ... recordFilter ) throws Exception {
-		CSVParser parser = new CSVParser(new FileReader(f), CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country"));							//for comma seperated file
-//		CSVParser parser = new CSVParser(new FileReader(f), CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter('|'));		//Pipe seperated file
+//		CSVParser parser = new CSVParser(new FileReader(f), CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country"));							//for comma seperated file
+		CSVParser parser = new CSVParser(new FileReader(f), CSVFormat.RFC4180.withHeader("Name", "Email", "Phone", "Country").withDelimiter('|'));		//Pipe seperated file
 		List<CSVRecord> list = parser.getRecords();
 		String edited = f.getAbsolutePath();
 		

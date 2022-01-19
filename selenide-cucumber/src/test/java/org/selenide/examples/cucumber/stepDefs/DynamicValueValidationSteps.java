@@ -111,7 +111,7 @@ public class DynamicValueValidationSteps {
 			System.out.println(tempArray.length);
 			System.out.println(tempArray);
 			
-			String  payloadFilePath = resourcesDirectory.getAbsolutePath()+"/payload_templates/temp/"+ tempArray[0] +"_01"+tempArray[1];
+			String  payloadFilePath = resourcesDirectory.getAbsolutePath()+"/payload_templates/temp/"+ tempArray[0]+ "_" +new Date().getTime() +"."+tempArray[1];
 			StreamResult sr = new StreamResult(new File(payloadFilePath));
 			tf.transform(domSource, sr);
 			scenario.attach(Files.readAllBytes(new File(payloadFilePath).toPath()), "text/plain", "request-body");
