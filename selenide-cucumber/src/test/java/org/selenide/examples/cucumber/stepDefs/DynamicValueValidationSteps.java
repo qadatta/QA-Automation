@@ -23,6 +23,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.assertj.core.api.SoftAssertions;
+import org.selenide.examples.cucumber.utils.PropertyFileReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -84,6 +85,14 @@ public class DynamicValueValidationSteps {
 				      nodeValue = ft.format(dNow);
 				      scenarioValidations.put("publish_date", nodeValue);
 				}
+				else if(nodeValue.contains("$financial_period_date$")) {
+					//Dynamically generated date
+
+					PropertyFileReader propertyFileReader = new PropertyFileReader();
+				      nodeValue = propertyFileReader.getPropertyValue("financial_period_date");
+				      scenarioValidations.put("financial_period_date", nodeValue);
+				}
+				
 				else if(nodeValue.equalsIgnoreCase("$SID$")) {
 					//Dynamically generated value 
 					nodeValue = "generated_SID";

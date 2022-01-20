@@ -247,6 +247,8 @@ public class CSVFileValidationSteps {
 					s[2] = columnValue;
 				else if(columnName.equalsIgnoreCase("Country"))
 					s[3] = columnValue;
+				else if(columnName.equalsIgnoreCase("financial_period_date"))
+					s[4] = columnValue;
 			}
 				
 
@@ -300,12 +302,7 @@ public class CSVFileValidationSteps {
 		CSVPrinter printer = new CSVPrinter(new FileWriter(edited),
 				CSVFormat.DEFAULT);
 		for (CSVRecord record : list) {
-			String name = record.get("Name");
-			String email = record.get("Email");
-			String phone = record.get("Phone");
-			String country = record.get("Country");
 			
-			System.out.println("-----------------------");
 			String[] s = toArray(record);
 			
 			boolean recordFound = true;
@@ -337,6 +334,9 @@ public class CSVFileValidationSteps {
 					s[02] = updateAttr[1];
 				else if(updateAttr[0].equalsIgnoreCase("Country"))
 					s[3] = updateAttr[1];
+				else if(updateAttr[0].equalsIgnoreCase("Country"))
+					s[3] = updateAttr[1];
+		
 			}
 				
 
